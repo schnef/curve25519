@@ -1,0 +1,12 @@
+{application, curve25519,
+ [
+  {description, ""},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { curve25519_app, []}},
+  {env, []}
+ ]}.

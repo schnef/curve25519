@@ -1,0 +1,4 @@
+%% encoding: UTF-8
+{application,curve25519}.
+{packages,[]}.
+{modules,[curve25519]}.
