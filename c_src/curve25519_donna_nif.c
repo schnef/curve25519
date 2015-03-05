@@ -45,12 +45,12 @@ static ERL_NIF_TERM make_public_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
 static ERL_NIF_TERM make_shared_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) 
 {
   ERL_NIF_TERM ret;
-  ErlNifBinary my_private_key;
   ErlNifBinary their_public_key;
+  ErlNifBinary my_private_key;
   unsigned char *shared_key;
   
-  if (!enif_inspect_iolist_as_binary(env, argv[0], &my_private_key) || my_private_key.size != 32 ||
-      !enif_inspect_iolist_as_binary(env, argv[1], &their_public_key) || their_public_key.size != 32) {
+  if (!enif_inspect_iolist_as_binary(env, argv[0], &their_public_key) || their_public_key.size != 32 ||
+      !enif_inspect_iolist_as_binary(env, argv[1], &my_private_key) || my_private_key.size != 32) {
     return enif_make_badarg(env);
   }
   shared_key = enif_make_new_binary(env, 32, &ret);
