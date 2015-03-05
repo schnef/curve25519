@@ -45,25 +45,27 @@ make_public(_Private_key) ->
     
 %% @doc
 %% Given someone else's Curve25519 public key, generate a 32-byte shared secret.
-%% @param Private_key my 32-byte Curve25519 private key 
 %% @param Public_key their 32-byte Curve25519 public key
+%% @param Private_key my 32-byte Curve25519 private key 
 %% @return Shared_key 32-byte Curve25519 shared key
 %% @end
--spec make_shared(Private_key :: iodata(), Public_key :: iodata()) -> Shared_key :: iodata().
-make_shared(_Private_key, _Public_key) ->
+-spec make_shared(Public_key :: iodata(), Private_key :: iodata()) -> Shared_key :: iodata().
+make_shared(_Public_key, _Private_key) ->
     exit(nif_library_not_loaded).
 
 -ifdef(TEST).
 
 curve25519_test() ->
-    Private_key_A = make_private(<<"01234567890123456789012345678901">>),
+    Secret_A = <<"01234567890123456789012345678901">>,
+    Private_key_A = make_private(Secret_A),
     Public_key_A = make_public(Private_key_A),
-   
-    Private_key_B = make_private(<<"abcdefghijklmnopqrstuvwxyz012345">>),
+
+    Secret_B = <<"abcdefghijklmnopqrstuvwxyz012345">>,
+    Private_key_B = make_private(Secret_B),
     Public_key_B = make_public(Private_key_B),
     
-    Shared_key_A = make_shared(Private_key_A, Public_key_B),
-    Shared_key_B = make_shared(Private_key_B, Public_key_A),
+    Shared_key_A = make_shared(Public_key_B, Private_key_A),
+    Shared_key_B = make_shared(Public_key_A, Private_key_B),
     
     ?assert(Shared_key_A == Shared_key_B).
  
