@@ -32,7 +32,7 @@ static ERL_NIF_TERM make_public_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   ERL_NIF_TERM ret;
   ErlNifBinary private_key;
   unsigned char* public_key;
-  unsigned char basepoint[32] = {9};
+  const unsigned char basepoint[32] = {9};
   
   if (!enif_inspect_iolist_as_binary(env, argv[0], &private_key) || private_key.size != 32) {
     return enif_make_badarg(env);
