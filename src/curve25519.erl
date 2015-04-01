@@ -1,6 +1,7 @@
 -module(curve25519).
 
--export([make_private/1, make_public/1, make_shared/2]).
+-export([make_private/0, make_private/1, make_public/1, 
+	 make_shared/2, sign/2, sign/3, verify/3]).
 
 -ifdef(TEST).
 -include_lib("eunit/include/eunit.hrl").
@@ -24,6 +25,14 @@ priv_dir() ->
 -spec init() -> ok.
 init() ->
     ok = erlang:load_nif(priv_dir() ++ "/curve25519_drv", 0).
+
+%% @doc 
+%% Make a secret into a private key.
+%% @return Private_key a 32-byte Curve25519 private key
+%% @end
+-spec make_private() -> Private_key :: iodata().
+make_private() ->
+    make_private(crypto:strong_rand_bytes(32)).
 
 %% @doc 
 %% Make a secret into a private key.
@@ -51,6 +60,38 @@ make_public(_Private_key) ->
 %% @end
 -spec make_shared(Public_key :: iodata(), Private_key :: iodata()) -> Shared_key :: iodata().
 make_shared(_Public_key, _Private_key) ->
+    exit(nif_library_not_loaded).
+
+%% @doc
+%% Sign a message with a curve25519 private key.
+%% @param Private_key my 32-byte Curve25519 private key 
+%% @param Message Payload to sign. Should not be larger then 256 bytes
+%% @return Shared_key 32-byte Curve25519 shared key
+%% @end
+-spec sign(Private_key :: iodata(), Message :: iodata()) -> Sig :: iodata().
+sign(Private_key, Message) ->
+    sign(Private_key, Message, crypto:rand_bytes(64)).
+
+%% @doc
+%% Sign a message with a curve25519 private key.
+%% @param Private_key my 32-byte Curve25519 private key 
+%% @param Message Payload to sign. Should not be larger then 256 bytes
+%% @param Random a 64 bytes random binary.
+%% @return Signature
+%% @end
+-spec sign(Private_key :: iodata(), Message :: iodata(), Random :: iodata()) -> Sig :: iodata().
+sign(_Private_key, _Message, _Random) ->
+    exit(nif_library_not_loaded).
+
+%% @doc
+%% Verify that message and signature match
+%% @param Public_key their 32-byte Curve25519 public key 
+%% @param Message Payload to verify. Should not be larger then 256 bytes
+%% @param Signature their signature.
+%% @return true if matches, otherwise false
+%% @end
+-spec verify(Public_key :: iodata(), Message :: iodata(), Signature :: iodata()) -> true | false.
+verify(_Public_key, _Message, _Signature) ->
     exit(nif_library_not_loaded).
 
 -ifdef(TEST).
