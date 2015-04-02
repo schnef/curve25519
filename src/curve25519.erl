@@ -1,6 +1,7 @@
 -module(curve25519).
 
 -export([make_private/0, make_private/1, make_public/1, 
+	 key_pair/0, key_pair/1,
 	 make_shared/2, sign/2, sign/3, verify/3]).
 
 -ifdef(TEST).
@@ -60,6 +61,23 @@ make_public(_Private_key) ->
 %% @end
 -spec make_shared(Public_key :: iodata(), Private_key :: iodata()) -> Shared_key :: iodata().
 make_shared(_Public_key, _Private_key) ->
+    exit(nif_library_not_loaded).
+
+%% @doc
+%% Generate a curve25519 keypair. Uses crypto:strong_rand_bytes as a secret.
+%% @return {Private_key, Public_key}
+%% @end
+-spec key_pair() -> {Private_key :: iodata(), Public_key :: iodata()}.
+key_pair() ->
+    key_pair(crypto:strong_rand_bytes(32)).
+
+%% @doc
+%% Given a randomly generated secret of 32 bytes, generate a private and public key pair.
+%% @param Seed of 32 bytes. Should be truely random.
+%% @return {Private_key, Public_key}
+%% @end
+-spec key_pair(Secret :: iodata()) -> {Private_key :: iodata(), Public_key :: iodata()}.
+key_pair(_Secret) ->
     exit(nif_library_not_loaded).
 
 %% @doc

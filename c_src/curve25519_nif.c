@@ -44,6 +44,30 @@ static ERL_NIF_TERM make_public_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM
   return ret;
 }
 
+static ERL_NIF_TERM key_pair_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) 
+{
+  ERL_NIF_TERM private_key_term, public_key_term;
+  ErlNifBinary seed;
+  unsigned char* private_key;
+  unsigned char* public_key;
+  const unsigned char basepoint[32] = {9};
+  
+  private_key = enif_make_new_binary(env, 32, &private_key_term);
+  public_key = enif_make_new_binary(env, 32, &public_key_term);
+  
+  if (!enif_inspect_iolist_as_binary(env, argv[0], &seed) || seed.size != 32) {
+    return enif_make_badarg(env);
+  }
+  memcpy(private_key, seed.data, 32);
+  private_key[0] &= 248;
+  private_key[31] &= 127;
+  private_key[31] |= 64;
+  
+  curve25519_donna(public_key, private_key, basepoint);
+
+  return enif_make_tuple2(env, private_key_term, public_key_term);
+}
+
 static ERL_NIF_TERM make_shared_nif(ErlNifEnv* env, int argc, const ERL_NIF_TERM argv[]) 
 {
   ERL_NIF_TERM ret;
@@ -104,7 +128,8 @@ static ErlNifFunc nif_funcs[] = {
   {"make_public", 1, make_public_nif},
   {"make_shared", 2, make_shared_nif},
   {"sign", 3, sign_nif},
-  {"verify", 3, verify_nif}
+  {"verify", 3, verify_nif},
+  {"key_pair", 1, key_pair_nif}
 };
 
 static int load(ErlNifEnv* env, void** priv, ERL_NIF_TERM load_info)
