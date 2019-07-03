@@ -88,7 +88,7 @@ key_pair(_Secret) ->
 %% @end
 -spec sign(Private_key :: iodata(), Message :: iodata()) -> Sig :: iodata().
 sign(Private_key, Message) ->
-    sign(Private_key, Message, crypto:rand_bytes(64)).
+    sign(Private_key, Message, crypto:strong_rand_bytes(64)).
 
 %% @doc
 %% Sign a message with a curve25519 private key.
@@ -112,6 +112,8 @@ sign(_Private_key, _Message, _Random) ->
 verify(_Public_key, _Message, _Signature) ->
     exit(nif_library_not_loaded).
 
+
+
 -ifdef(TEST).
 
 curve25519_test() ->
@@ -128,4 +130,25 @@ curve25519_test() ->
     
     ?assert(Shared_key_A == Shared_key_B).
  
+
+curve25519_RFC_8031_test() ->
+    I = ["75","1f","b4","30","86","55","b4","76","b6","78","9b","73","25","f9","ea","8c",
+	 "dd","d1","6a","58","53","3f","f6","d9","e6","00","09","46","4a","5f","9d","94"],
+    R = ["0a","54","64","52","53","29","0d","60","dd","ad","d0","e0","30","ba","cd","9e",
+	 "55","01","ef","dc","22","07","55","a1","e9","78","f1","b8","39","a0","56","88"],
+    S = ["c7","49","50","60","7a","12","32","7f","32","04","d9","4b","68","25","bf","b0",
+	 "68","b7","f8","31","9a","9e","37","08","ed","3d","43","ce","81","30","c9","50"],
+    Random_i = list_to_binary([list_to_integer(X, 16) || X <- I]),
+    Random_r = list_to_binary([list_to_integer(X, 16) || X <- R]),
+    Shared_secret = list_to_binary([list_to_integer(X, 16) || X <- S]),
+
+    D_i = make_private(Random_i),
+    Pub_i = make_public(D_i),
+    D_r = make_private(Random_r),
+    Pub_r = make_public(D_r),
+    Shared_secret_i = make_shared(Pub_r, D_i),
+    Shared_secret_r = make_shared(Pub_i, D_r),
+    
+    ?assert(Shared_secret_i =:= Shared_secret andalso Shared_secret_r =:= Shared_secret).
+
 -endif.

@@ -1,7 +1,7 @@
 {application, curve25519,
  [
-  {description, ""},
-  {vsn, "1"},
+  {description, "curve25519-donna plus curve25519 signing and verifying as Erlang NIFs"},
+  {vsn, "2"},
   {registered, []},
   {applications, [
                   kernel,

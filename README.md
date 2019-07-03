@@ -1,23 +1,25 @@
 # curve25519
+
 curve25519-donna plus curve25519 signing and verifying as Erlang NIFs.
 
 ## Install
+
 This is only tested on i386 and X86_64 Debian. It might very well work on other platforms as well.
-Rebar is included with the repo. A C compiler should be available.
-Get the repo from github and build with rebar.
 
 ```
 $ cd curve25519/
-$ ./rebar clean compile eunit doc
+$ rebar3 clean compile eunit doc
 ```
 
 ## Usage
-Generate a curve25519 keypair. The function returns a tuple with the private and public key. 
-```
-$ erl -pa ../curve25519/ebin/
-Erlang/OTP 17 [erts-6.3] [source] [64-bit] [smp:2:2] [async-threads:10] [kernel-poll:false]
 
-Eshell V6.3  (abort with ^G)
+Generate a curve25519 keypair. The function returns a tuple with the private and public key. 
+
+```
+$ rebar3 shell
+Erlang/OTP 22 [erts-10.4] [source] [64-bit] [smp:2:2] [ds:2:2:10] [async-threads:1]
+
+Eshell V10.4  (abort with ^G)
 1> {Private_key, Public_key} = curve25519:key_pair().
 {<<248,145,8,249,68,34,194,102,57,70,243,15,115,45,100,
    103,228,117,122,129,128,34,221,61,134,185,211,174,...>>,
@@ -47,12 +49,8 @@ show_me_how() ->
     Shared_key_A == Shared_key_B.
 ```
 Now sign and verify:
+
 ```
-$ erl -pa ../curve25519/ebin/
-Erlang/OTP 17 [erts-6.3] [source] [64-bit] [smp:2:2] [async-threads:10] [kernel-poll:false]
-
-Eshell V6.3  (abort with ^G)
-
 9> l(curve25519).                  
 {module,curve25519}
 10> Csk = curve25519:make_private().
@@ -72,3 +70,4 @@ true
 false
 
 ```
+
